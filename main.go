@@ -96,7 +96,7 @@ func ConfirmMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func main() {
-	token := os.Getenv("TOKEN")
+	token := os.Getenv("TOKEN_MORISS")
     dg, err := discordgo.New(token)
     if err != nil {
         fmt.Println("Erreur:", err)

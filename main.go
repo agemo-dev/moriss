@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "os"
     "github.com/bwmarrin/discordgo"
     "strings"
 )
@@ -16,7 +17,7 @@ var AlphabetMRC = map[rune]string{
     'Z': "--..",
     '0': "-----", '1': ".----", '2': "..---", '3': "...--", '4': "....-",
     '5': ".....", '6': "-....", '7': "--...", '8': "---..", '9': "----.",
-    '!': "-.-.--", '?': "..--..",
+    '!': "-.-.--", '?': "..--..", '\'': ".----.", ' ': "",
 }
 
 
@@ -29,7 +30,7 @@ var AlphabetFR = map[string]rune{
     "--..": 'Z',
     "-----": '0', ".----": '1', "..---": '2', "...--": '3', "....-": '4',
     ".....": '5', "-....": '6', "--...": '7', "---..": '8', "----.": '9',
-    "-.-.--": '!', "..--..": '?', " ": '\\',
+    "-.-.--": '!', "..--..": '?', ".----.": '\'',
 }
 
 
@@ -58,21 +59,22 @@ func DecodeMessage(msg string, alpha map[string]rune) string {
             start++
         }
     }
-    return traduction
+    return strings.ToUpper(traduction)
 }
 
 func CodeMessage(msg string, alpha map[rune]string) string {
 	var (
-		traduction string,
+		traduction string
 		temp string
+		err bool
 	)
-	for _, e := range msg {
-		temp = alpha[e] + "/"
-		if(temp == "/") {
+	for _, e := range strings.ToUpper(msg) {
+		temp, err = alpha[e]
+		if(!err) {
 			traduction = "symbole invalide"
 			break
 		}
-		traduction += temp
+		traduction += temp + "/"
 	}
 	return traduction
 }
@@ -94,7 +96,7 @@ func ConfirmMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func main() {
-    token := "Bot" + "8fcfa2779ae1b00857f40dcf8d5c4b1e2eff58726e59ebea9bf02aa477ca9743"
+	token := os.Getenv("TOKEN")
     dg, err := discordgo.New(token)
     if err != nil {
         fmt.Println("Erreur:", err)
